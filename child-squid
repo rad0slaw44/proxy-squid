@@ -1,0 +1,137 @@
+#
+# Recommended minimum configuration:
+#
+
+#
+# Radius configuration - START - Grev 16/11/19
+#
+
+#auth_param basic program /usr/local/squid/libexec/squid_radius_auth -f /etc/radius_config
+#auth_param basic children 5
+#auth_param basic realm Web-Proxy
+#auth_param basic credentialsttl 5 minute
+#auth_param basic casesensitive off
+
+#acl radius-auth proxy_auth REQUIRED
+#http_access allow radius-auth
+#http_access allow localhost
+#http_access deny all
+
+#
+# Radius configuration - END
+#
+
+
+
+
+
+# Example rule allowing access from your local networks.
+# Adapt to list your (internal) IP networks from where browsing
+# should be allowed
+#acl localnet src 100.64.0.0/10  # RFC6598
+#acl localnet src 90.216.134.194
+#acl localnet src 172.16.0.0/12 # RFC1918 possible internal network
+#acl localnet src 192.168.0.0/16        # RFC1918 possible internal network
+#acl localnet src fc00::/7       # RFC 4193 local private network range
+#acl localnet src fe80::/10      # RFC 4291 link-local (directly plugged) machines
+
+acl SSL_ports port 443
+acl SSL_ports port 8443
+acl SSL_ports port 80
+acl SSL_ports port 8060
+acl SSL_ports port 8080
+acl Safe_ports port 80          # http
+acl Safe_ports port 443          # https
+acl Safe_ports port 8443
+acl Safe_ports port 8060
+acl Safe_ports port 8080
+#acl Safe_ports port 21         # ftp
+#acl Safe_ports port 70         # gopher
+#acl Safe_ports port 210                # wais
+#acl Safe_ports port 1025-65535 # unregistered ports
+#acl Safe_ports port 280                # http-mgmt
+#acl Safe_ports port 488                # gss-http
+#acl Safe_ports port 591                # filemaker
+#acl Safe_ports port 777                # multiling http
+acl CONNECT method CONNECT
+
+# ACL specifying the file with allowed destination URLs.
+#
+
+acl allowed_urls dstdomain "/etc/squid/allowed-sites.acl"
+
+#
+# Recommended minimum Access Permission configuration:
+#
+# Deny requests to certain unsafe ports
+http_access deny !Safe_ports
+
+# Deny CONNECT to other than secure SSL ports
+http_access deny CONNECT !SSL_ports
+
+# Only allow cachemgr access from localhost
+http_access allow localhost manager
+http_access deny manager
+
+# We strongly recommend the following be uncommented to protect innocent
+# web applications running on the proxy server who think the only
+# one who can access services on "localhost" is a local user
+#http_access deny to_localhost
+
+#
+# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+#
+
+# Only allow the access to the specyfic URLs.
+#
+http_access allow allowed_urls
+
+# Example rule allowing access from your local networks.
+# Adapt localnet in the ACL section to list your (internal) IP networks
+# from where browsing should be allowed
+http_access allow localnet
+http_access allow localhost
+
+# And finally deny all other access to this proxy
+http_access deny all
+
+# Squid normally listens to port 3128
+http_port 3128
+
+
+# Uncomment and adjust the following to add a disk cache directory.
+#cache_dir ufs /var/spool/squid 100 16 256
+
+# Leave coredumps in the first cache dir
+coredump_dir /var/spool/squid
+
+#
+# Add any of your own refresh_pattern entries above these.
+#
+refresh_pattern ^ftp:           1440    20%     10080
+refresh_pattern ^gopher:        1440    0%      1440
+refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+refresh_pattern .               0       20%     4320
+
+#
+# Forward web requests for FID devices to the proxy on the FID probe - used to provide GUI access
+#
+#cache_peer fid-ohmp-prb1.opticoreit.com 3128 no-query default
+#cache_peer_domain fid-ohmp-prb1.opticoreit.com .fid.opticoreit.com
+#cache_peer fid-ohmp-prb1.opticoreit.com parent 3128 0 no-query no-digest
+#cache_peer_domain fid-ohmp-prb1.opticoreit.com .fid.opticoreit.com
+#cache_peer_domain fid-ohmp-prb1.opticoreit.com 10.142.254.4
+
+nonhierarchical_direct off
+ssl_bump splice all
+cache_peer wr-ohmp-prb1.opticoreit.com parent 3128 0 no-query default
+cache_peer_domain wr-ohmp-prb1.opticoreit.com .wr.opticoreit.com
+cache_peer fid-ohmp-prb1.opticoreit.com parent 3128 0 no-query default
+cache_peer_domain fid-ohmp-prb1.opticoreit.com .fid.opticoreit.com
+cache_peer ucem-ohmp-prb1.opticoreit.com parent 3128 0 no-query default
+cache_peer_domain ucem-ohmp-prb1.opticoreit.com .ucem.opticoreit.com
+
+# Set the access-log format
+#
+logformat squid      %{%d/%b/%Y:%H:%M:%S}tl.%03tu %6tr %>a %Ss/%03>Hs %<st %rm %ru %[un %Sh/%<a %mt
+
