@@ -1,0 +1,8 @@
+#Place the URLs which are allowed to be accessed via proxy below:
+
+.agent.jumpcloud.com
+.kickstart.jumpcloud.com
+.lastpass.com
+.wr.opticoreit.com
+.fid.opticoreit.com
+.ucem.opticoreit.com
