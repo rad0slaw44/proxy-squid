@@ -5,12 +5,12 @@ The purpose of this project was to limit the access through proxy only to the sp
 
 The repository consists of the squid configuration files for the child proxy and the parent proxy as well as the "child-allowed-sites.acl" file that contains
 the URLs allowed to be accessed through the child proxy server. Parent proxy is deployed for each customer. 
-In addition there is a "*CustomerName*-allowed-sites.acl file for each customer. 
+In addition there is a "*CustomerName*-parent-allowed-sites.acl file for each customer. 
 
 - child-proxy - child proxy configuration file
 - parent-proxy - parent proxy configuration file
 - child-allowed-sites.acl - allowed URLs on the child proxy.
-- *CustomerName*-allowed-sites.acl - allowed URLs for the specyfic customer.
+- *CustomerName*-parent-allowed-sites.acl - allowed URLs for the specyfic customer.
 
 Both child and parent proxy files are configured to allow the access only to the destinations specyfied in the "allowed-sites.acl" file.
 Any other access through proxy is denied and logged in /var/log/squid/access.log. This is achived be the following lines in the configuration file.
