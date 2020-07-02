@@ -1,8 +1,26 @@
-#Place the URLs which are allowed to be accessed via proxy below:
-
+#External permitted services
 .agent.jumpcloud.com
 .kickstart.jumpcloud.com
 .lastpass.com
+.gitlab.com
+
+#Yum repos
+mirrorlist.centos.org
+mirror.centos.org
+d36uatko69830t.cloudfront.net
+
+
+#Customer domains
 .wr.opticoreit.com
 .fid.opticoreit.com
 .ucem.opticoreit.com
+.monitor.opticoreit.com
+
+#Customer Probe
+wr-ohmp-prb1.opticoreit.com
+opti-ohmp-prb1.opticoreit.com
+ucem-ohmp-prb1.opticoreit.com
+fid-ohmp-prb1.opticoreit.com
+
+#Testing
+opti-ohmp-test-fw1.opticoreit.com
