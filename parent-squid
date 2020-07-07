@@ -5,6 +5,17 @@
 # Example rule allowing access from your local networks.
 # Adapt to list your (internal) IP networks from where browsing
 # should be allowed
+
+
+#ACL allowing access from the child proxy.
+#
+acl localnet src 100.67.100.10/32
+
+# ACL specifying the file with allowed destination URLs.
+#
+acl allowed_urls dstdomain "/etc/squid/allowed-sites.acl"
+
+
 #acl localnet src 10.0.0.0/8    # RFC1918 possible internal network
 #acl localnet src 172.16.0.0/12 # RFC1918 possible internal network
 #acl localnet src 192.168.0.0/16        # RFC1918 possible internal network
@@ -35,10 +46,6 @@ acl Safe_ports port 8080
 #acl Safe_ports port 777                # multiling http
 acl CONNECT method CONNECT
 
-# ACL specifying the file with allowed destination URLs.
-#
-acl allowed_urls dstdomain "/etc/squid/allowed-sites.acl"
-
 #
 # Recommended minimum Access Permission configuration:
 #
@@ -61,9 +68,10 @@ http_access deny manager
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 #
 
-# Only allow the access to the specyfic URLs.
+# Only allow the access to the URLs defined in "allowed-urls" acl AND from the resources in "localnet" acl. 
 #
-http_access allow allowed_urls
+
+http_access allow allowed_urls localnet
 
 # Example rule allowing access from your local networks.
 # Adapt localnet in the ACL section to list your (internal) IP networks
