@@ -20,9 +20,7 @@ auth_param basic credentialsttl 1 hour
 
 #ACL allowing access from the local resources
 #
-acl localnet src 100.127.255.0/24 
-acl localnet src 100.127.32.0/24  
-acl localnet src 100.127.33.0/24  
+acl localnet src "/etc/squid/localnet.acl" 
 
 #ACL for RADIUS authentication
 #

@@ -9,7 +9,7 @@
 
 #ACL allowing access from the child proxy.
 #
-acl localnet src 100.67.100.10/32
+acl localnet src "/etc/squid/localnet.acl"
 
 # ACL specifying the file with allowed destination URLs.
 #
