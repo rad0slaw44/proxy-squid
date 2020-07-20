@@ -1,4 +1,5 @@
 #External permitted services
+.jumpcloud.com
 .agent.jumpcloud.com
 .kickstart.jumpcloud.com
 .lastpass.com
@@ -8,7 +9,7 @@
 mirrorlist.centos.org
 mirror.centos.org
 d36uatko69830t.cloudfront.net
-
+mirrors.fedoraproject.org
 
 #Customer domains
 .wr.opticoreit.com
@@ -21,6 +22,8 @@ wr-ohmp-prb1.opticoreit.com
 opti-ohmp-prb1.opticoreit.com
 ucem-ohmp-prb1.opticoreit.com
 fid-ohmp-prb1.opticoreit.com
+wb-ohmp-prb1.opticoreit.com
 
 #Testing
 opti-ohmp-test-fw1.opticoreit.com
+

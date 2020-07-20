@@ -1,0 +1,12 @@
+#YUM REPOS
+
+^.*mirror[s]?.*                                #any address that contain 'mirror' or 'mirrors' in url path
+^.*centos.*                                    #any address that contain 'centos' or 'mirrors' in url path
+^http://.*repodata.*                           #any address that starts with http:// and contains 'repodata' in url path
+^fedora.*                                      #any address that starts with fedora
+^epel.*                                        #any address that starts with epel
+
+#AWS
+
+^s3.amazonaws.com                              #any address that starts with s3.amazonaws.com
+.*jumpcloud.*\.s3.amazonaws.com.*              #any address that includes 'jumpcloud' and s3.amazonaws.com
