@@ -34,7 +34,7 @@ then
             echo -e $message | mailx -A gmail -s "RADIUS server nor reachable" $email
             continue
 	fi
-#unless ping successfull the update the hosts file with the new ip address for "radius-server"
+#if ping is successfull update the hosts file with the new ip address for "radius-server"
         
         if [ $? -eq 0 ]
 	then 
