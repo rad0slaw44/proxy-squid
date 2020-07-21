@@ -1,0 +1,16 @@
+Mon Jul 20 23:57:49 UTC 2020 There is no RADIUS server defined . Please add the RADIUS server to the /home/ec2-user/radius_srv.txt file.
+Tue Jul 21 00:01:55 UTC 2020 PING to 172.31.18.147 failed. This address will be removed from the /home/ec2-user/radius_srv.txt
+Tue Jul 21 00:01:55 UTC 2020 PING to 172.31.19.150 succeded
+Tue Jul 21 00:03:39 UTC 2020 PING to 172.31.18.147 failed. This address will be removed from the /home/ec2-user/radius_srv.txt
+Tue Jul 21 00:03:39 UTC 2020 PING to 172.31.19.150 succeeded
+Tue Jul 21 00:03:39 UTC 2020 The /etc/hosts file  has been successfully updated with the following entry: "172.31.19.150 radius-server"
+Tue Jul 21 00:05:01 UTC 2020 PING to 172.31.18.147 failed. This address will be removed from the /home/ec2-user/radius_srv.txt
+Tue Jul 21 00:05:02 UTC 2020 PING to 172.31.19.150 succeeded
+Tue Jul 21 00:05:02 UTC 2020 The /etc/hosts file  has been successfully updated with the following entry: "172.31.19.150 radius-server".
+Tue Jul 21 00:05:30 UTC 2020 PING to 172.31.19.150 succeeded
+Tue Jul 21 00:05:32 UTC 2020 PING to 172.31.19.150 succeeded
+Tue Jul 21 00:05:36 UTC 2020 PING to 172.31.19.150 succeeded
+Tue Jul 21 00:05:50 UTC 2020 PING to 172.31.19.150 succeeded.
+Tue Jul 21 00:05:53 UTC 2020 PING to 172.31.19.150 succeeded.
+Tue Jul 21 00:06:16 UTC 2020 PING to 172.31.19.150 succeeded.
+
