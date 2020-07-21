@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#define the variables
+
+LogLocation="/var/log/ohmp-radius.log"
+filename="/home/ec2-user/radius_srv.txt"
+message1=$(printf "The <%s> file does not have any RADIUS servers defined. This could mean that none of the RADIUS server is reachable. Please verify.." "$filename")
+email=rdobrenko\@outlook\.com
+hosts="/etc/hosts"
+cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
+
+#exec &> $LogLocation
+
+# check if the RADIUS file exists
+
+if [ -s $filename ]
+then
+    i=1
+
+#Loop through the file
+
+    while read -r line; do
+
+#and ping each line (IP address of the RADIUS server)
+    	ping -c1 $line
+
+#Send the message to the user if ping unssuccessfull and go to the begining of the loop	
+        
+        if [ $? -ne 0 ]
+        then
+	    echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation	
+	    sed -i "${i}d" $filename
+            message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
+            echo -e $message | mailx -A gmail -s "RADIUS server nor reachable" $email
+            continue
+	fi
+#unless ping successfull the update the hosts file with the new ip address for "radius-server"
+        
+        if [ $? -eq 0 ]
+	then 
+	    echo -e "`date -u` PING to $line succeeded." >> $LogLocation	
+            if [ $line != $cur_h_entry ]
+            then 
+	        hostentry=$(echo $line" radius-server")
+	        sed -i  "s/.*radius-server/$hostentry/" $hosts
+                if [ $? -eq 0 ]
+                then
+	            echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
+	        fi
+	    fi
+	fi   
+	break
+    done < $filename
+
+#send the warning message if the RADIUS file is empty
+else
+    echo -e $message1 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
+    echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
+fi
+    
+
+
+
+
