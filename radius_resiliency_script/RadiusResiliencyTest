@@ -4,8 +4,10 @@
 
 LogLocation="/var/log/ohmp-radius.log"
 filename="/home/ec2-user/radius_srv.txt"
-message1=$(printf "The <%s> file does not have any RADIUS servers defined. This could mean that none of the RADIUS server is reachable. Please verify.." "$filename")
-email=rdobrenko\@outlook\.com
+email1=support@opticoreit.com
+email2=radek.dobrenko@opticoreit.com
+email3=Omid.Mortazavi@opticoreit.com
+
 hosts="/etc/hosts"
 cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
 
@@ -31,7 +33,7 @@ then
 	    echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation	
 	    sed -i "${i}d" $filename
             message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
-            echo -e $message | mailx -A gmail -s "RADIUS server nor reachable" $email
+#            echo -e $message | mailx -A gmail -s "RADIUS server nor reachable" $email2 $email3
             continue
 	fi
 #if ping is successfull update the hosts file with the new ip address for "radius-server"
