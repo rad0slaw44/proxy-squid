@@ -45,10 +45,10 @@ then
 	        sed -i "s/.*radius-server/$hostentry/" $hosts && sudo service squid restart
                 if [ $? -eq 0 ]
                 then
-	            echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
-                echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
-            else
-                echo -e "`date -u` Please check the status of the \"SQUID\" service.
+	                echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
+                    echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
+                else
+                    echo -e "`date -u` Please check the status of the \"SQUID\" service.
 	        fi
 	    fi
 	fi   
