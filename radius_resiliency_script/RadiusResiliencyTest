@@ -3,7 +3,7 @@
 #define the variables
 
 LogLocation="/var/log/ohmp-radius.log"
-filename="/home/ec2-user/radius_srvs.txt"
+filename="/home/optisys/radius_srvs.txt"
 hosts="/etc/hosts"
 cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
 
