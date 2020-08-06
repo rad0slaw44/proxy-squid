@@ -3,7 +3,7 @@
 #define the variables
 
 LogLocation="/var/log/ohmp-radius.log"
-filename="/home/ec2-user/radius_srv.txt"
+filename="/home/ec2-user/radius_srvs.txt"
 email1=support@opticoreit.com
 email2=radek.dobrenko@opticoreit.com
 email3=Omid.Mortazavi@opticoreit.com
