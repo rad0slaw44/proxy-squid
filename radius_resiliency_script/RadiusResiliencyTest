@@ -4,12 +4,16 @@
 
 LogLocation="/var/log/ohmp-radius.log"
 filename="/home/ec2-user/radius_srvs.txt"
+hosts="/etc/hosts"
+cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
+
 email1=support@opticoreit.com
 email2=radek.dobrenko@opticoreit.com
 email3=Omid.Mortazavi@opticoreit.com
 
-hosts="/etc/hosts"
-cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
+message1="The radius-resiliency script tried to restart the SQUID proxy service and the process has failed on opti-ohmp-jmp1. Please try to restart it manually"
+message2="The radius-\"resiliency script\" discovered that there is no RADIUS server defined in the $filename. That may indicate that there is no RADIUS server reachability. Please check manually and add at least one working RADIUS IP address to the $filename."
+
 
 #exec &> $LogLocation
 
@@ -24,44 +28,106 @@ then
     while read -r line; do
 
 #and ping each line (IP address of the RADIUS server)
-    	ping -c1 $line
+        ping -c1 $line
 
-#Send the message to the user if ping unssuccessfull and go to the begining of the loop	
-        
+#Send the message to the user if ping unssuccessfull and go to the begining of the loop
+
         if [ $? -ne 0 ]
         then
-	    echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation	
-	    sed -i "${i}d" $filename
+            echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation
+            sed -i "${i}d" $filename
             message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
-#            echo -e $message | mailx -A gmail -s "RADIUS server nor reachable" $email2 $email3
+#            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
             continue
-	fi
+        fi
 #if ping is successfull update the hosts file with the new ip address for "radius-server"
-        
+
         if [ $? -eq 0 ]
-	then 
-	    echo -e "`date -u` PING to $line succeeded." >> $LogLocation	
+        then
+            echo -e "`date -u` PING to $line succeeded." >> $LogLocation
             if [ $line != $cur_h_entry ]
-            then 
-	        hostentry=$(echo $line" radius-server")
-	        sed -i "s/.*radius-server/$hostentry/" $hosts && sudo service squid restart
+            then
+                hostentry=$(echo $line" radius-server")
+                sed -i "s/.*radius-server/$hostentry/" $hosts && sudo service squid restart
                 if [ $? -eq 0 ]
                 then
-	            echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
+                    echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
                     echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
                 else
                     echo -e "`date -u` Please check the status of the \"SQUID\" service.
-	        fi
-	    fi
-	fi   
-	break
+                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
+
+                fi
+            fi
+        fi
+        break
     done < $filename
 
 #send the warning message if the RADIUS file is empty
 else
-    echo -e $message1 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
+#    echo -e $message1 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
+    mail -s "No RADIUS server defined in $filename" email1 <<< message2
     echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
 fi
+
+[ec2-user@ip-172-31-22-77 ~]$ vi radius-resiliency
+
+
+#exec &> $LogLocation
+
+# check if the RADIUS file exists
+
+if [ -s $filename ]
+then
+    i=1
+
+#Loop through the file
+
+    while read -r line; do
+
+#and ping each line (IP address of the RADIUS server)
+        ping -c1 $line
+
+#Send the message to the user if ping unssuccessfull and go to the begining of the loop
+
+        if [ $? -ne 0 ]
+        then
+            echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation
+            sed -i "${i}d" $filename
+            message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
+#            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
+            continue
+        fi
+#if ping is successfull update the hosts file with the new ip address for "radius-server"
+
+        if [ $? -eq 0 ]
+        then
+            echo -e "`date -u` PING to $line succeeded." >> $LogLocation
+            if [ $line != $cur_h_entry ]
+            then
+                hostentry=$(echo $line" radius-server")
+                sed -i "s/.*radius-server/$hostentry/" $hosts && sudo service squid restart
+                if [ $? -eq 0 ]
+                then
+                    echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
+                    echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
+                else
+                    echo -e "`date -u` Please check the status of the \"SQUID\" service.
+                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
+
+                fi
+            fi
+        fi
+        break
+    done < $filename
+
+#send the warning message if the RADIUS file is empty
+else
+#    echo -e $message2 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
+    mail -s "No RADIUS server defined in $filename" email1 <<< message2
+    echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
+fi
+
     
 
 
