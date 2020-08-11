@@ -10,7 +10,7 @@ The child proxy is configured to allow the user traffic as long as the user come
  - localnet.acl (/etc/squid/localnet.acl) - this file defines the resources that can use proxy server.
  - allowed-sites.acl (/etc/squid/allowed-sites.acl) - this file defines the URLs that are allowed through proxy service.
  - probes.acl - (/etc/squid/probes.acl) - this file defines the parent proxies. (customer probes)
- - regex.acl - (/etc/squid/regex.acl) - this file defines the URLs that are allowed through proxy service in the for of regular expressions.
+ - regex.acl - (/etc/squid/regex.acl) - this file defines the URLs that are allowed through proxy service in the form of regular expressions.
 
 ## PARENT PROXY (customer probes)
 
