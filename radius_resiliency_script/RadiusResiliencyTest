@@ -6,6 +6,7 @@ LogLocation="/var/log/ohmp-radius.log"
 filename="/home/optisys/radius_srvs.txt"
 hosts="/etc/hosts"
 cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
+regex=.*Host\ is\ up.*open\\s.*
 
 email1=support@opticoreit.com
 email2=radek.dobrenko@opticoreit.com
@@ -27,14 +28,16 @@ then
 
     while read -r line; do
 
+        probe=$(sudo nmap -sU -Pn -p1812 $line)
+
 #and ping each line (IP address of the RADIUS server)
-        ping -c1 $line
+        #ping -c1 $line
 
 #Send the message to the user if ping unssuccessfull and go to the begining of the loop
 
-        if [ $? -ne 0 ]
+        if [ $probe !~ $regex ]
         then
-            echo -e "`date -u` PING to $line failed. This address will be removed from the $filename" >> $LogLocation
+            echo -e "`date -u` The RADIUS server with the IP address $line could not be contacted by nmap probe. This address will be removed from the $filename" >> $LogLocation
             sed -i "${i}d" $filename
             message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
 #            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
@@ -42,9 +45,9 @@ then
         fi
 #if ping is successfull update the hosts file with the new ip address for "radius-server"
 
-        if [ $? -eq 0 ]
+        if [ $probe =~ $regex ]
         then
-            echo -e "`date -u` PING to $line succeeded." >> $LogLocation
+            echo -e "`date -u` Nmap probe to $line succeeded." >> $LogLocation
             if [ $line != $cur_h_entry ]
             then
                 hostentry=$(echo $line" radius-server")
