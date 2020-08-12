@@ -28,14 +28,14 @@ then
 
     while read -r line; do
 
+#checking the server reachability using nmap
+
         probe=$(sudo nmap -sU -Pn -p1812 $line)
+        [[ $probe =~ $regex ]] &&  result=0 ||  result=1
 
-#and ping each line (IP address of the RADIUS server)
-        #ping -c1 $line
+#Send the message to the user if probe  unssuccessfull and go to the begining of the loop
 
-#Send the message to the user if ping unssuccessfull and go to the begining of the loop
-
-        if [ $probe !~ $regex ]
+        if [ $result == 1 ]
         then
             echo -e "`date -u` The RADIUS server with the IP address $line could not be contacted by nmap probe. This address will be removed from the $filename" >> $LogLocation
             sed -i "${i}d" $filename
@@ -43,9 +43,9 @@ then
 #            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
             continue
         fi
-#if ping is successfull update the hosts file with the new ip address for "radius-server"
+#if probe  is successfull update the hosts file with the new ip address for "radius-server"
 
-        if [ $probe =~ $regex ]
+        if [ $result == 0 ]
         then
             echo -e "`date -u` Nmap probe to $line succeeded." >> $LogLocation
             if [ $line != $cur_h_entry ]
@@ -57,8 +57,8 @@ then
                     echo -e "`date -u` The $hosts file  has been successfully updated with the following entry: \"$line radius-server\"." >> $LogLocation
                     echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
                 else
-                    echo -e "`date -u` Please check the status of the \"SQUID\" service.
-                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
+                    echo -e "`date -u` Please check the status of the \"SQUID\" service."
+#                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
 
                 fi
             fi
@@ -69,12 +69,6 @@ then
 #send the warning message if the RADIUS file is empty
 else
 #    echo -e $message1 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
-    mail -s "No RADIUS server defined in $filename" email1 <<< message2
+#    mail -s "No RADIUS server defined in $filename" email1 <<< message2
     echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
 fi
-
-    
-
-
-
-
