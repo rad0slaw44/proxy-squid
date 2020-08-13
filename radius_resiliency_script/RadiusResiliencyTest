@@ -3,7 +3,7 @@
 #define the variables
 
 LogLocation="/var/log/ohmp-radius.log"
-filename="/home/optisys/radius_srvs.txt"
+filename="/etc/squid/RadiusResiliency/radius_srvs.txt"
 hosts="/etc/hosts"
 cur_h_entry=$(grep 'radius-server' $hosts | awk '{print $1}')
 regex=.*Host\ is\ up.*open\\s.*
@@ -40,6 +40,7 @@ then
             echo -e "`date -u` The RADIUS server with the IP address $line could not be contacted by nmap probe. This address will be removed from the $filename" >> $LogLocation
             sed -i "${i}d" $filename
             message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
+            mail -s "RADIUS server is not reachable" $email1 <<< $message
 #            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
             continue
         fi
@@ -58,7 +59,7 @@ then
                     echo -e "`date -u` The \"SQUID\" service restarted successfully" >> $LogLocation
                 else
                     echo -e "`date -u` Please check the status of the \"SQUID\" service."
-#                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
+                    mail -s "SQUID service restart process failed" $email1 <<< $messsage1
 
                 fi
             fi
@@ -69,6 +70,7 @@ then
 #send the warning message if the RADIUS file is empty
 else
 #    echo -e $message1 | mailx -A gmail -s "No RADIUS server defined in $filename" $email
-#    mail -s "No RADIUS server defined in $filename" email1 <<< message2
+    mail -s "No RADIUS server defined in $filename" $email1 <<< $message2
     echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
 fi
+
