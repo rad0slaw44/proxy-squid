@@ -28,10 +28,24 @@ then
 
     while read -r line; do
 
-#checking the server reachability using nmap
+#checking the server reachability using nmap (three probes every 10 sec)
 
-        probe=$(sudo nmap -sU -Pn -p1812 $line)
-        [[ $probe =~ $regex ]] &&  result=0 ||  result=1
+        try=0
+        for ((t=1;t<=3;t++))
+            do
+                probe=$(sudo nmap -sU -Pn -p1812 $line)
+                
+		if [[ $probe =~ $regex ]]  
+                then
+                    try=0
+                    break
+                else
+                    sleep 10 
+                    ((try+=1))
+                fi     
+	    done
+
+        [[ $try == 3 ]] && result=1 || result=0
 
 #Send the message to the user if probe  unssuccessfull and go to the begining of the loop
 
@@ -41,17 +55,17 @@ then
             sed -i "${i}d" $filename
             message=$(printf "The radius server with IP address: %s is not reachable. It has been removed from %s. Please check the server.." "$line" "$filename".)
             mail -s "RADIUS server is not reachable" $email1 <<< $message
-#            echo -e $message | mailx -A gmail -s "RADIUS server is not reachable" $email2
             continue
         fi
 #if probe  is successfull update the hosts file with the new ip address for "radius-server"
 
         if [ $result == 0 ]
         then
+            echo $line
             echo -e "`date -u` Nmap probe to $line succeeded." >> $LogLocation
             if [ $line != $cur_h_entry ]
             then
-                hostentry=$(echo $line" radius-server")
+                hostentry=$(echo $line"    radius-server")
                 sed -i "s/.*radius-server/$hostentry/" $hosts && sudo service squid restart
                 if [ $? -eq 0 ]
                 then
@@ -73,4 +87,3 @@ else
     mail -s "No RADIUS server defined in $filename" $email1 <<< $message2
     echo -e "`date -u` There is no RADIUS server defined . Please add the RADIUS server to the $filename file." >> $LogLocation
 fi
-
